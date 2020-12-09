@@ -9,11 +9,12 @@ const User = require("../models/user.model");
 const {
   isLoggedIn,
   isNotLoggedIn,
-  validationLogin
+  validationLogin,
+  validationSignup
 } = require("../helpers/middlewares");
 
 // POST '/auth/signup'
-router.post('/signup', isNotLoggedIn, validationLogin, (req, res, next) => {
+router.post('/signup', isNotLoggedIn, validationSignup, (req, res, next) => {
   const { username, email, password } = req.body;
   console.log(username, email, password);
 
@@ -34,7 +35,7 @@ router.post('/signup', isNotLoggedIn, validationLogin, (req, res, next) => {
             // set the `req.session.currentUser` using newly created user object, to trigger creation of the session and cookie
             createdUser.password = "*";
             req.session.currentUser = createdUser; // automatically logs in the user by setting the session/cookie
-
+            console.log("current user:",req.session.currentUser);
             res
               .status(201) // Created
               .json(createdUser); // res.send()
@@ -57,11 +58,11 @@ router.post('/signup', isNotLoggedIn, validationLogin, (req, res, next) => {
 
 // POST '/auth/login'
 router.post('/login', isNotLoggedIn, validationLogin, (req, res, next) => {
-  const { username, email, password } = req.body;
+  const { username, password } = req.body;
 
   User.findOne({ username })
     .then( (user) => {
-      if (! user || ! email) {
+      if (! user) {
         // If user with that username can't be found, respond with an error
         return next( createError(404)  );  // Not Found
       }
