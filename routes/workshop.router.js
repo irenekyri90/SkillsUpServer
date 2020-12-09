@@ -36,7 +36,7 @@ router.post('/workshops', isLoggedIn, (req, res, next) => {
 
 // GET '/api/workshops/:category  => returns results by category
 
-router.get('/workshops/:category', (req, res, next) => {
+router.get('/workshops/category/:category', (req, res, next) => {
   const {category} = req.params;
   Workshop.find({category})
   .then((foundWorkshops) => {
@@ -52,7 +52,7 @@ router.get('/workshops/:category', (req, res, next) => {
 
 router.get('/workshops/:id', (req, res) => {
   const {id} = req.params;
-
+  console.log(id);
   if (!mongoose.Types.ObjectId.isValid(id)) {
     res
       .status(400) //  Bad Request

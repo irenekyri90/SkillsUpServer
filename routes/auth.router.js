@@ -3,6 +3,8 @@ const router = express.Router();
 const createError = require("http-errors");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+
+const uploader = require("./../config/cloudinary-setup");
 const User = require("../models/user.model");
 
 // HELPER FUNCTIONS
@@ -13,10 +15,26 @@ const {
   validationSignup
 } = require("../helpers/middlewares");
 
+// include CLOUDINARY:
+//upload a single image per once.
+// ADD an horitzontal middleware
+router.post("/upload", uploader.single("img"), (req, res, next) => {
+  console.log("file is: ", req.file);
+
+  if (!req.file) {
+    next(new Error("No file uploaded!"));
+    return;
+  }
+  // get secure_url from the file object and save it in the
+  // variable 'secure_url', but this can be any name, just make sure you remember to use the same in frontend
+  res.json({ secure_url: req.file.secure_url });
+});
+
+
 // POST '/auth/signup'
 router.post('/signup', isNotLoggedIn, validationSignup, (req, res, next) => {
-  const { username, email, password } = req.body;
-  console.log(username, email, password);
+  const { username, img, email, password } = req.body;
+  console.log(username, img, email, password);
 
   User.findOne({ username })
     .then( (foundUser) => {
@@ -30,7 +48,7 @@ router.post('/signup', isNotLoggedIn, validationSignup, (req, res, next) => {
         const salt = bcrypt.genSaltSync(saltRounds);
         const encryptedPassword = bcrypt.hashSync(password, salt);
 
-        User.create( { username, email, password: encryptedPassword })
+        User.create( { username, img, email, password: encryptedPassword })
           .then( (createdUser) => {
             // set the `req.session.currentUser` using newly created user object, to trigger creation of the session and cookie
             createdUser.password = "*";
