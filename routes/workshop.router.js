@@ -51,7 +51,7 @@ router.get('/workshops/:category', (req, res, next) => {
 // GET '/api/workshops/:id  => returns details page
 
 router.get('/workshops/:id', (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     res
@@ -62,12 +62,57 @@ router.get('/workshops/:id', (req, res) => {
 
   Workshop.findById(id)
     .then((foundWorkshop) => {
+      
       res.status(200).json(foundWorkshop);
     })
     .catch((err) => {
       res.status(500).json(err);
     })
 })
+
+// PUT '/api/workshops/:id  => make changes to workshop
+
+router.put('/workshops/:id', (req, res, next) => {
+  const { id } = req.params;
+  const { title, img, description, category, date, length, credits, maxParticipants, location} = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res
+      .status(400) //  Bad Request
+      .json({ message: "Specified id is not valid" });
+    return;
+  }
+
+  Workshop.findByIdAndUpdate(id, { title, img, description, category, date, length, credits, maxParticipants, location} )
+    .then(() => {
+      res.status(200).send();
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
+
+// DELETE '/api/workshops/:id  => make changes to workshop
+
+router.delete('/workshops/:id', (req, res, next) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res
+      .status(400) //  Bad Request
+      .json({ message: "Specified id is not valid" });
+    return;
+  }
+
+  Workshop.findByIdAndRemove(id)
+    .then(() => {
+      res.status(202)
+      .send(`Document ${id} was removed successfully.`);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
 
 
 
