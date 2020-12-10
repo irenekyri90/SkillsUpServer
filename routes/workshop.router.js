@@ -117,7 +117,7 @@ router.delete('/workshops/:id', (req, res, next) => {
 
 router.post('/workshops/signup/:id', (req,res,next)  => {
   const { id } = req.params;
-  const userId = req.session.currentUser._id;
+  const {userId} = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     res
