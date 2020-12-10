@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const {isLoggedIn} = require("./../helpers/middlewares");
+const User = require("./../models/user.model");
 
 const Workshop = require('../models/workshop.model');
 
@@ -113,6 +114,47 @@ router.delete('/workshops/:id', (req, res, next) => {
       res.status(500).json(err);
     });
 });
+
+router.post('/workshops/signup/:id', (req,res,next)  => {
+  const { id } = req.params;
+  const userId = req.session.currentUser._id;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res
+      .status(400) //  Bad Request
+      .json({ message: "Specified id is not valid" });
+    return;
+  }
+
+  Workshop.findByIdAndUpdate(id, {$push: {participants: userId }}, {new: true})
+    .then((updatedWorkshop) => {
+      const {credits} = updatedWorkshop;
+
+
+      User.findByIdAndUpdate(userId, { $inc: {wallet: -credits}, $push: {attendedWorkshops: updatedWorkshop}}, {new:true})
+        .then((updatedUser) => {
+          res.status(200).send("User updated succesfully.");
+        })
+        .catch((err) =>  next(err))
+
+
+    })
+    .catch((err) => {
+      next(err);
+    });
+
+
+})
+
+
+
+
+
+
+
+
+
+
 
 
 
