@@ -3,9 +3,9 @@ const Schema = mongoose.Schema;
 
 const workshopSchema = new Schema({
     title: {type: String, required: true},
-    img: {type: String, required: true},
+    img: {type: String},
     description: {type: String, required: true},
-    category: {type: String, required: true},
+    category: {type: String},
     date: {type: Date},
     length: {type: Number, required: true},
     credits: {type: Number, required: true},

@@ -9,9 +9,10 @@ const Workshop = require('../models/workshop.model');
 //POST 'api/workshops'  => to post a new workshop
 
 router.post('/workshops', isLoggedIn, (req, res, next) => {
-  const { title, img, description, category, date, length, credits, maxParticipants, location} = req.body;
-  const { _id } = req.session.currentUser;
-  console.log(req.session.currentUser);
+  const { title, img, description, category, date, length, credits, maxParticipants, location}= req.body;
+  //const userId = req.session.currentUser._id;
+  const userId = req.body.userId;
+  console.log(title);
 
   Workshop.create({
     title,
@@ -24,16 +25,65 @@ router.post('/workshops', isLoggedIn, (req, res, next) => {
     maxParticipants,
     location,
     participants: [],
-    host: _id
+    host: userId
   })
   .then((createdWorkshop) => {
-    res.status(201).json(createdWorkshop);
+    
+    
+    User.findByIdAndUpdate(userId, { $inc: {wallet: 50}, $push: {hostedWorkshops: createdWorkshop._id}}, {new:true})
+        .then((updatedUser) => {
+          res.status(200).send("User updated succesfully.");
+        })
+        .catch((err) =>  next(err))
+
+
   })
   .catch((err) => {
-    res
-      .status(400)
+    next(err)
   });
 });
+
+
+
+
+//POST 'api/workshops'  => to post a new workshop
+
+// router.post('/workshops', (req, res, next) => {
+//   const { title, img, description, category, date, length, credits, maxParticipants, location} = req.body;
+//  //const { _id } = req.session.currentUser;
+//   const {_id} = req.body;
+//   console.log(title);
+
+//   Workshop.create({
+//     title,
+//     img,
+//     description,
+//     category,
+//     date,
+//     length,
+//     credits,
+//     maxParticipants,
+//     location,
+//     participants: [],
+//     host: _id
+//   })
+//   .then((createdWorkshop) => {
+//     res.status(201).json(createdWorkshop);
+//   })
+//   .catch((err) => {
+//     res
+//       .status(400)
+//   });
+// });
+
+
+
+
+
+
+
+
+
 
 // GET '/api/workshops/:category  => returns results by category
 
@@ -145,14 +195,6 @@ router.post('/workshops/signup/:id', (req,res,next)  => {
 
 
 })
-
-
-
-
-
-
-
-
 
 
 
