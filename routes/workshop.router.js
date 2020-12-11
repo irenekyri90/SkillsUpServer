@@ -67,46 +67,7 @@ router.post('/workshops', isLoggedIn, (req, res, next) => {
 
 
 
-//POST 'api/workshops'  => to post a new workshop
-
-// router.post('/workshops', (req, res, next) => {
-//   const { title, img, description, category, date, length, credits, maxParticipants, location} = req.body;
-//  //const { _id } = req.session.currentUser;
-//   const {_id} = req.body;
-//   console.log(title);
-
-//   Workshop.create({
-//     title,
-//     img,
-//     description,
-//     category,
-//     date,
-//     length,
-//     credits,
-//     maxParticipants,
-//     location,
-//     participants: [],
-//     host: _id
-//   })
-//   .then((createdWorkshop) => {
-//     res.status(201).json(createdWorkshop);
-//   })
-//   .catch((err) => {
-//     res
-//       .status(400)
-//   });
-// });
-
-
-
-
-
-
-
-
-
-
-// GET '/api/workshops/:category  => returns results by category
+// GET '/api/workshops/category/:category  => returns results by category
 
 router.get('/workshops/category/:category', (req, res, next) => {
   const {category} = req.params;
@@ -133,6 +94,7 @@ router.get('/workshops/:id', (req, res) => {
   }
 
   Workshop.findById(id)
+    .populate("participants")
     .then((foundWorkshop) => {
       
       res.status(200).json(foundWorkshop);
@@ -188,6 +150,7 @@ router.delete('/workshops/:id', (req, res, next) => {
 
 
 
+// POST '/api/workshops/signup/:id  => signup for workshop
 
 router.post('/workshops/signup/:id', (req,res,next)  => {
   const { id } = req.params;
@@ -218,7 +181,46 @@ router.post('/workshops/signup/:id', (req,res,next)  => {
     });
 
 
+});
+
+
+
+
+// POST '/api/workshops/cancel/:id  => cancel participance for workshop
+
+router.post('/workshops/cancel/:id', (req,res,next)  => {
+  const { id } = req.params;
+  const {userId} = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res
+      .status(400) //  Bad Request
+      .json({ message: "Specified id is not valid" });
+    return;
+  }
+
+  Workshop.findByIdAndUpdate(id, {$pull: {participants: userId }}, {new: true})
+    .then((updatedWorkshop) => {
+      const {credits} = updatedWorkshop;
+
+
+      User.findByIdAndUpdate(userId, { $inc: {wallet: credits}, $pull: {attendedWorkshops: updatedWorkshop}}, {new:true})
+        .then((updatedUser) => {
+          res.status(200).send("User updated succesfully.");
+        })
+        .catch((err) =>  next(err))
+
+
+    })
+    .catch((err) => {
+      next(err);
+    });
+
+
 })
+
+
+
 
 
 
