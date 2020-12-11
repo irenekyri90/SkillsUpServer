@@ -21,6 +21,7 @@ router.get('/user', isLoggedIn, (req, res, next) => {
 
   User.findById(_id)
     .populate('attendedWorkshops')
+    .populate('hostedWorkshops')
     .then((user) => {
       res.status(200).json(user);
     })
