@@ -11,6 +11,7 @@ require('dotenv').config();
 
 const authRouter = require('./routes/auth.router');
 const workshopRouter = require('./routes/workshop.router');
+const userRouter = require('./routes/user.router');
 
 
 // MONGOOSE CONNECTION
@@ -62,6 +63,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ROUTER MIDDLEWARE
 app.use('/auth', authRouter);
 app.use('/api', workshopRouter)
+app.use('/api', userRouter);
 
 
 
