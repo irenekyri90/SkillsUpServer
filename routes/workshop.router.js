@@ -30,7 +30,7 @@ router.post('/workshops', isLoggedIn, (req, res, next) => {
   .then((createdWorkshop) => {
     
     
-    User.findByIdAndUpdate(userId, { $inc: {wallet: 50}, $push: {hostedWorkshops: createdWorkshop._id}}, {new:true})
+    User.findByIdAndUpdate(userId, { $inc: {wallet: createdWorkshop.credits*2}, $push: {hostedWorkshops: createdWorkshop._id}}, {new:true})
         .then((updatedUser) => {
           res.status(200).send("User updated succesfully.");
         })
@@ -164,6 +164,9 @@ router.delete('/workshops/:id', (req, res, next) => {
       res.status(500).json(err);
     });
 });
+
+
+
 
 router.post('/workshops/signup/:id', (req,res,next)  => {
   const { id } = req.params;
