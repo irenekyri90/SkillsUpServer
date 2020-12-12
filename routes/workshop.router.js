@@ -202,8 +202,10 @@ router.post('/workshops/cancel/:id', (req,res,next)  => {
   Workshop.findByIdAndUpdate(id, {$pull: {participants: userId }}, {new: true})
     .then((updatedWorkshop) => {
       const {credits} = updatedWorkshop;
+      //const credtis = updatedWorkshop.credits;
 
-
+      console.log("IIIIIDDDDDDDD", userId);
+      
       User.findByIdAndUpdate(userId, { $inc: {wallet: credits}, $pull: {attendedWorkshops: updatedWorkshop}}, {new:true})
         .then((updatedUser) => {
           res.status(200).send("User updated succesfully.");
