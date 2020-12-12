@@ -223,9 +223,4 @@ router.post('/workshops/cancel/:id', (req,res,next)  => {
 
 
 
-
-
-
-
-
 module.exports = router;
