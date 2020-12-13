@@ -79,6 +79,73 @@ router.post('/workshops', isLoggedIn, (req, res, next) => {
 });
 
 
+// PUT '/api/workshops/:id  => make changes to workshop (ROUTER TO CALCULATE NEW WALLET UPDATE)
+
+router.put('/workshops/:id', (req, res, next) => {
+  const { id } = req.params;
+  const { title, img, description, category, date, length, credits, maxParticipants, location, userId} = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res
+      .status(400) //  Bad Request
+      .json({ message: "Specified id is not valid" });
+    return;
+  }
+
+  Workshop.findById(id)
+    .then((oldWorkshop) => {
+      const oldPrice = oldWorkshop.credits;
+      Workshop.findByIdAndUpdate(id, { title, img, description, category, date, length, credits, maxParticipants, location} )
+        .then((updatedWorkshop) => {
+
+          console.log("UPDATED WORKSHOP CREDITS after updated", updatedWorkshop.credits);
+
+          if (oldPrice === credits) {
+            res.status(200).send("Workshop updated.");
+          } else if ( credits < oldPrice) {
+            User.findByIdAndUpdate(userId, { $inc: {wallet: -updatedWorkshop.credits}}, {new:true})
+            .then((updatedUser) => {
+              res.status(200).send("User updated succesfully.");
+            })
+            .catch((err) =>  next(err))
+          } else {
+            console.log("UPDATED WORKSHOP CREDITS after updated", updatedWorkshop.credits);
+            User.findByIdAndUpdate(userId, { $inc: {wallet: 50}}, {new:true})
+            .then((updatedUser) => {
+              res.status(200).send("User updated succesfully.");
+            })
+            .catch((err) =>  next(err))
+          }
+         
+    
+        })
+        .catch((err) => {
+          next(err);
+        });
+
+    })
+    .catch((err) =>  next(err) );
+
+
+
+  // Workshop.findByIdAndUpdate(id, { title, img, description, category, date, length, credits, maxParticipants, location} )
+  //   .then((updatedWorkshop) => {
+
+
+  //     User.findByIdAndUpdate(userId, { $inc: {wallet: updatedWorkshop.credits*2}}, {new:true})
+  //       .then((updatedUser) => {
+  //         res.status(200).send("User updated succesfully.");
+  //       })
+  //       .catch((err) =>  next(err))
+
+  //   })
+  //   .catch((err) => {
+  //     next(err);
+  //   });
+
+});
+
+
 
 
 // GET '/api/workshops/category/:category  => returns results by category
@@ -118,29 +185,31 @@ router.get('/workshops/:id', (req, res) => {
     })
 })
 
-// PUT '/api/workshops/:id  => make changes to workshop
+// // PUT '/api/workshops/:id  => make changes to workshop
 
-router.put('/workshops/:id', (req, res, next) => {
-  const { id } = req.params;
-  const { title, img, description, category, date, length, credits, maxParticipants, location} = req.body;
+// router.put('/workshops/:id', (req, res, next) => {
+//   const { id } = req.params;
+//   const { title, img, description, category, date, length, credits, maxParticipants, location} = req.body;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    res
-      .status(400) //  Bad Request
-      .json({ message: "Specified id is not valid" });
-    return;
-  }
+//   if (!mongoose.Types.ObjectId.isValid(id)) {
+//     res
+//       .status(400) //  Bad Request
+//       .json({ message: "Specified id is not valid" });
+//     return;
+//   }
 
-  Workshop.findByIdAndUpdate(id, { title, img, description, category, date, length, credits, maxParticipants, location} )
-    .then(() => {
-      res.status(200).send();
-    })
-    .catch((err) => {
-      res.status(500).json(err);
-    });
-});
+//   Workshop.findByIdAndUpdate(id, { title, img, description, category, date, length, credits, maxParticipants, location} )
+//     .then(() => {
+//       res.status(200).send();
+//     })
+//     .catch((err) => {
+//       res.status(500).json(err);
+//     });
+// });
 
 // DELETE '/api/workshops/:id  => make changes to workshop
+
+
 
 router.delete('/workshops/:id', (req, res, next) => {
   const { id } = req.params;
