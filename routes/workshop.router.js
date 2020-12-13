@@ -9,6 +9,20 @@ const uploader = require("./../config/cloudinary-setup");
 const Workshop = require('../models/workshop.model');
 
 
+//GET ALL WORKSHOPS
+router.get('/workshops', (req, res, next) => {
+  Workshop.find()
+  .then((foundWorkshops) => {
+    res.status(200).json(foundWorkshops);
+  })
+  .catch((err) => {
+    res
+      .status(400)
+  });
+});
+
+
+
 // include CLOUDINARY:
 //upload a single image per once.
 // ADD an horitzontal middleware
