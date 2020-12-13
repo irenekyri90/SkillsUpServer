@@ -207,12 +207,14 @@ router.get('/workshops/:id', (req, res) => {
 //     });
 // });
 
-// DELETE '/api/workshops/:id  => make changes to workshop
 
 
+// DELETE '/api/workshops/:id  => delete workshop and update user wallet but does not appear yet
 
 router.delete('/workshops/:id', (req, res, next) => {
   const { id } = req.params;
+  const {userId} = req.body; //WHY IS THE USERID UNDEFINED ??? WE PASS IS CORRECTLY IN THE FRONT END
+  console.log("USERID", userId);
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     res
@@ -222,14 +224,43 @@ router.delete('/workshops/:id', (req, res, next) => {
   }
 
   Workshop.findByIdAndRemove(id)
-    .then(() => {
-      res.status(202)
-      .send(`Document ${id} was removed successfully.`);
+    .then((deletedWorkshop) => {
+      console.log("CREDITS", deletedWorkshop.credits);
+      User.findByIdAndUpdate(userId, { $inc: {wallet: -50}}, {new:true})
+        .then((updatedUser) => {
+          //console.log("UPDATED USER WALLET:", updatedUser.wallet)
+          res.status(200).send("User updated succesfully.");
+        })
+        .catch((err) =>  next(err))
+
     })
     .catch((err) => {
-      res.status(500).json(err);
+      next(err);
     });
 });
+
+
+// DELETE '/api/workshops/:id  => make changes to workshop
+
+// router.delete('/workshops/:id', (req, res, next) => {
+//   const { id } = req.params;
+
+//   if (!mongoose.Types.ObjectId.isValid(id)) {
+//     res
+//       .status(400) //  Bad Request
+//       .json({ message: "Specified id is not valid" });
+//     return;
+//   }
+
+//   Workshop.findByIdAndRemove(id)
+//     .then(() => {
+//       res.status(202)
+//       .send(`Document ${id} was removed successfully.`);
+//     })
+//     .catch((err) => {
+//       res.status(500).json(err);
+//     });
+// });
 
 
 
@@ -274,6 +305,7 @@ router.post('/workshops/signup/:id', (req,res,next)  => {
 router.post('/workshops/cancel/:id', (req,res,next)  => {
   const { id } = req.params;
   const {userId} = req.body;
+  console.log("cancel USER ID ", userId);
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     res
@@ -287,7 +319,6 @@ router.post('/workshops/cancel/:id', (req,res,next)  => {
       const {credits} = updatedWorkshop;
       //const credtis = updatedWorkshop.credits;
 
-      console.log("IIIIIDDDDDDDD", userId);
       
       User.findByIdAndUpdate(userId, { $inc: {wallet: credits}, $pull: {attendedWorkshops: updatedWorkshop}}, {new:true})
         .then((updatedUser) => {
