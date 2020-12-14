@@ -103,13 +103,13 @@ router.put('/workshops/:id', (req, res, next) => {
           if (oldPrice === credits) {
             res.status(200).send("Workshop updated.");
           } else if ( credits < oldPrice) {
-            User.findByIdAndUpdate(userId, { $inc: {wallet: -updatedWorkshop.credits}}, {new:true})
+            User.findByIdAndUpdate(userId, { $inc: {wallet: -(oldPrice*2) + updatedWorkshop.credits*2}}, {new:true})
             .then((updatedUser) => {
               res.status(200).send("User updated succesfully.");
             })
             .catch((err) =>  next(err))
           } else {
-            console.log("UPDATED WORKSHOP CREDITS after updated", updatedWorkshop.credits);
+            //console.log("UPDATED WORKSHOP CREDITS after updated", updatedWorkshop.credits);
             User.findByIdAndUpdate(userId, { $inc: {wallet: 50}}, {new:true})
             .then((updatedUser) => {
               res.status(200).send("User updated succesfully.");
