@@ -32,7 +32,11 @@ const app = express();
 app.use(
   cors({
     credentials: true,
-    origin: [process.env.PUBLIC_DOMAIN],
+    origin: [
+      process.env.PUBLIC_DOMAIN,
+      'http://skills-up-app.herokuapp.com',
+      'https://skills-up-app.herokuapp.com'
+    ],
   }),
 );
 
@@ -65,7 +69,10 @@ app.use('/auth', authRouter);
 app.use('/api', workshopRouter)
 app.use('/api', userRouter);
 
-
+// ROUTE FOR SERVING REACT APP (index.html)
+app.use((req, res) => {
+  res.sendFile(__dirname + "/public/index.html");
+});
 
 // ERROR HANDLING
 //  Catch 404 and respond with error message
