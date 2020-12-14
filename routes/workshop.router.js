@@ -179,6 +179,7 @@ router.get('/workshops/:id', (req, res) => {
 
   Workshop.findById(id)
     .populate("participants")
+    .populate("host")
     .then((foundWorkshop) => {
       
       res.status(200).json(foundWorkshop);
