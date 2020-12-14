@@ -84,6 +84,7 @@ router.post('/workshops', isLoggedIn, (req, res, next) => {
 router.put('/workshops/:id', (req, res, next) => {
   const { id } = req.params;
   const { title, img, description, category, date, length, credits, maxParticipants, location, userId} = req.body;
+  console.log("CREDITS FROM REQ:BOD", credits);
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     res
@@ -98,19 +99,21 @@ router.put('/workshops/:id', (req, res, next) => {
       Workshop.findByIdAndUpdate(id, { title, img, description, category, date, length, credits, maxParticipants, location} )
         .then((updatedWorkshop) => {
 
-          console.log("UPDATED WORKSHOP CREDITS after updated", updatedWorkshop.credits);
+          console.log("old price", oldPrice);
+          console.log("new price", updatedWorkshop.credits);
 
           if (oldPrice === credits) {
             res.status(200).send("Workshop updated.");
-          } else if ( credits < oldPrice) {
-            User.findByIdAndUpdate(userId, { $inc: {wallet: -(oldPrice*2) + updatedWorkshop.credits*2}}, {new:true})
-            .then((updatedUser) => {
-              res.status(200).send("User updated succesfully.");
-            })
-            .catch((err) =>  next(err))
+          // } else if ( credits < oldPrice) {
+          //   User.findByIdAndUpdate(userId, { $inc: {wallet: credits-oldPrice}}, {new:true})
+          //   .then((updatedUser) => {
+
+          //     res.status(200).send("User updated succesfully.");
+          //   })
+          //   .catch((err) =>  next(err))
           } else {
             //console.log("UPDATED WORKSHOP CREDITS after updated", updatedWorkshop.credits);
-            User.findByIdAndUpdate(userId, { $inc: {wallet: 50}}, {new:true})
+            User.findByIdAndUpdate(userId, { $inc: {wallet: credits*2 - oldPrice*2}}, {new:true})
             .then((updatedUser) => {
               res.status(200).send("User updated succesfully.");
             })
@@ -211,10 +214,10 @@ router.get('/workshops/:id', (req, res) => {
 
 // DELETE '/api/workshops/:id  => delete workshop and update user wallet but does not appear yet
 
-router.delete('/workshops/:id', (req, res, next) => {
+router.post('/workshops/:id', (req, res, next) => {
   const { id } = req.params;
   const {userId} = req.body; //WHY IS THE USERID UNDEFINED ??? WE PASS IS CORRECTLY IN THE FRONT END
-  console.log("USERID", userId);
+  console.log("REQ BODY", req.body);
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     res
@@ -226,7 +229,7 @@ router.delete('/workshops/:id', (req, res, next) => {
   Workshop.findByIdAndRemove(id)
     .then((deletedWorkshop) => {
       console.log("CREDITS", deletedWorkshop.credits);
-      User.findByIdAndUpdate(userId, { $inc: {wallet: -50}}, {new:true})
+      User.findByIdAndUpdate(userId, { $inc: {wallet: -(deletedWorkshop.credits*2)}}, {new:true})
         .then((updatedUser) => {
           //console.log("UPDATED USER WALLET:", updatedUser.wallet)
           res.status(200).send("User updated succesfully.");
@@ -320,7 +323,7 @@ router.post('/workshops/cancel/:id', (req,res,next)  => {
       //const credtis = updatedWorkshop.credits;
 
       
-      User.findByIdAndUpdate(userId, { $inc: {wallet: credits}, $pull: {attendedWorkshops: updatedWorkshop}}, {new:true})
+      User.findByIdAndUpdate(userId, { $inc: {wallet: credits}, $pull: {attendedWorkshops: updatedWorkshop._id}}, {new:true})
         .then((updatedUser) => {
           res.status(200).send("User updated succesfully.");
         })
