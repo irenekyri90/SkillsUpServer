@@ -1,6 +1,7 @@
 // bin/seed.js
 const mongoose = require("mongoose");
 const Workshop = require("./../models/workshop.model");
+require('dotenv').config();
 
 
 const workshops = require("./workshops-mock-data");
@@ -12,7 +13,7 @@ const DB_NAME = "skills-up-db";
 
 // 0. ESTABLISH CONNECTION TO MONGO DATABASE
 mongoose
-  .connect(`mongodb://localhost:27017/${DB_NAME}`, {
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,

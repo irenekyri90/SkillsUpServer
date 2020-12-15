@@ -155,8 +155,7 @@ const workshops = [
     },
     {
       title: "Mountainbiking on Montserrat",
-      img:
-        "https://images.unsplash.com/photo-1530091731612-0b2d7278ca14?ixid=MXwxMjA3fDB8MHxzZWFyY2h8M3x8a2l0ZXN1cmZpbmd8ZW58MHx8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+      img: "https://images.unsplash.com/photo-1533589067335-b0114bd0ab00?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=769&q=80",
       description:
         "Are you an adrenaline junkie? Join our professional mountainbikers for an adventurous trip on the beautiful Montserrat.",
       category: "Sports",
