@@ -45,7 +45,6 @@ router.post("/upload", uploader.single("img"), (req, res, next) => {
 
 router.post('/workshops', isLoggedIn, (req, res, next) => {
   const { title, img, description, category, date, length, credits, maxParticipants, location}= req.body;
-  //const userId = req.session.currentUser._id;
   const userId = req.body.userId;
   console.log(title);
 
@@ -104,15 +103,7 @@ router.put('/workshops/:id', (req, res, next) => {
 
           if (oldPrice === credits) {
             res.status(200).send("Workshop updated.");
-          // } else if ( credits < oldPrice) {
-          //   User.findByIdAndUpdate(userId, { $inc: {wallet: credits-oldPrice}}, {new:true})
-          //   .then((updatedUser) => {
-
-          //     res.status(200).send("User updated succesfully.");
-          //   })
-          //   .catch((err) =>  next(err))
           } else {
-            //console.log("UPDATED WORKSHOP CREDITS after updated", updatedWorkshop.credits);
             User.findByIdAndUpdate(userId, { $inc: {wallet: credits*2 - oldPrice*2}}, {new:true})
             .then((updatedUser) => {
               res.status(200).send("User updated succesfully.");
@@ -120,7 +111,6 @@ router.put('/workshops/:id', (req, res, next) => {
             .catch((err) =>  next(err))
           }
          
-    
         })
         .catch((err) => {
           next(err);
@@ -128,23 +118,6 @@ router.put('/workshops/:id', (req, res, next) => {
 
     })
     .catch((err) =>  next(err) );
-
-
-
-  // Workshop.findByIdAndUpdate(id, { title, img, description, category, date, length, credits, maxParticipants, location} )
-  //   .then((updatedWorkshop) => {
-
-
-  //     User.findByIdAndUpdate(userId, { $inc: {wallet: updatedWorkshop.credits*2}}, {new:true})
-  //       .then((updatedUser) => {
-  //         res.status(200).send("User updated succesfully.");
-  //       })
-  //       .catch((err) =>  next(err))
-
-  //   })
-  //   .catch((err) => {
-  //     next(err);
-  //   });
 
 });
 
@@ -189,35 +162,12 @@ router.get('/workshops/:id', (req, res) => {
     })
 })
 
-// // PUT '/api/workshops/:id  => make changes to workshop
-
-// router.put('/workshops/:id', (req, res, next) => {
-//   const { id } = req.params;
-//   const { title, img, description, category, date, length, credits, maxParticipants, location} = req.body;
-
-//   if (!mongoose.Types.ObjectId.isValid(id)) {
-//     res
-//       .status(400) //  Bad Request
-//       .json({ message: "Specified id is not valid" });
-//     return;
-//   }
-
-//   Workshop.findByIdAndUpdate(id, { title, img, description, category, date, length, credits, maxParticipants, location} )
-//     .then(() => {
-//       res.status(200).send();
-//     })
-//     .catch((err) => {
-//       res.status(500).json(err);
-//     });
-// });
-
-
 
 // DELETE '/api/workshops/:id  => delete workshop and update user wallet but does not appear yet
 
 router.post('/workshops/:id', (req, res, next) => {
   const { id } = req.params;
-  const {userId} = req.body; //WHY IS THE USERID UNDEFINED ??? WE PASS IS CORRECTLY IN THE FRONT END
+  const {userId} = req.body; 
   console.log("REQ BODY", req.body);
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -232,7 +182,6 @@ router.post('/workshops/:id', (req, res, next) => {
       console.log("CREDITS", deletedWorkshop.credits);
       User.findByIdAndUpdate(userId, { $inc: {wallet: -(deletedWorkshop.credits*2)}}, {new:true})
         .then((updatedUser) => {
-          //console.log("UPDATED USER WALLET:", updatedUser.wallet)
           res.status(200).send("User updated succesfully.");
         })
         .catch((err) =>  next(err))
@@ -242,29 +191,6 @@ router.post('/workshops/:id', (req, res, next) => {
       next(err);
     });
 });
-
-
-// DELETE '/api/workshops/:id  => make changes to workshop
-
-// router.delete('/workshops/:id', (req, res, next) => {
-//   const { id } = req.params;
-
-//   if (!mongoose.Types.ObjectId.isValid(id)) {
-//     res
-//       .status(400) //  Bad Request
-//       .json({ message: "Specified id is not valid" });
-//     return;
-//   }
-
-//   Workshop.findByIdAndRemove(id)
-//     .then(() => {
-//       res.status(202)
-//       .send(`Document ${id} was removed successfully.`);
-//     })
-//     .catch((err) => {
-//       res.status(500).json(err);
-//     });
-// });
 
 
 
@@ -321,25 +247,18 @@ router.post('/workshops/cancel/:id', (req,res,next)  => {
   Workshop.findByIdAndUpdate(id, {$pull: {participants: userId }}, {new: true})
     .then((updatedWorkshop) => {
       const {credits} = updatedWorkshop;
-      //const credtis = updatedWorkshop.credits;
 
-      
       User.findByIdAndUpdate(userId, { $inc: {wallet: credits}, $pull: {attendedWorkshops: updatedWorkshop._id}}, {new:true})
         .then((updatedUser) => {
           res.status(200).send("User updated succesfully.");
         })
         .catch((err) =>  next(err))
 
-
     })
     .catch((err) => {
       next(err);
     });
-
-
 })
-
-
 
 
 
