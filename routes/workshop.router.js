@@ -83,7 +83,7 @@ router.post('/workshops', isLoggedIn, (req, res, next) => {
 router.put('/workshops/:id', (req, res, next) => {
   const { id } = req.params;
   const { title, img, description, category, date, length, credits, maxParticipants, location, userId} = req.body;
-  console.log("CREDITS FROM REQ:BOD", credits);
+  console.log("CREDITS FROM REQ:BODY", credits);
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     res
