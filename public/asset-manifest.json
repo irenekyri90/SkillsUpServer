@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/static/css/main.e6666073.chunk.css",
-    "main.js": "/static/js/main.ca1ffc40.chunk.js",
-    "main.js.map": "/static/js/main.ca1ffc40.chunk.js.map",
+    "main.css": "/static/css/main.8e942690.chunk.css",
+    "main.js": "/static/js/main.eb2c06ae.chunk.js",
+    "main.js.map": "/static/js/main.eb2c06ae.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.4d222c40.js",
     "runtime-main.js.map": "/static/js/runtime-main.4d222c40.js.map",
     "static/css/2.20aa2d7b.chunk.css": "/static/css/2.20aa2d7b.chunk.css",
@@ -10,7 +10,7 @@
     "static/js/2.ac3adb1d.chunk.js.map": "/static/js/2.ac3adb1d.chunk.js.map",
     "index.html": "/index.html",
     "static/css/2.20aa2d7b.chunk.css.map": "/static/css/2.20aa2d7b.chunk.css.map",
-    "static/css/main.e6666073.chunk.css.map": "/static/css/main.e6666073.chunk.css.map",
+    "static/css/main.8e942690.chunk.css.map": "/static/css/main.8e942690.chunk.css.map",
     "static/js/2.ac3adb1d.chunk.js.LICENSE.txt": "/static/js/2.ac3adb1d.chunk.js.LICENSE.txt",
     "static/media/CategoryCard.css": "/static/media/sports.a15ec4f9.jpg",
     "static/media/App.css": "/static/media/signup-img.a66eda50.jpg"
@@ -19,7 +19,7 @@
     "static/js/runtime-main.4d222c40.js",
     "static/css/2.20aa2d7b.chunk.css",
     "static/js/2.ac3adb1d.chunk.js",
-    "static/css/main.e6666073.chunk.css",
-    "static/js/main.ca1ffc40.chunk.js"
+    "static/css/main.8e942690.chunk.css",
+    "static/js/main.eb2c06ae.chunk.js"
   ]
 }
